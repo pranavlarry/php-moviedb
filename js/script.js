@@ -93,6 +93,24 @@ function getGenre(id){
     )
 }
 
+function showResult(value) {
+    if(value.length>2 || $.isNumeric(value)){
+        $.get(
+            'search.php',{
+                data: value
+            },
+            function(result){
+                console.log(result)
+                $('#suggestion').html("suggestions:- "+result);
+            }
+        )
+    }
+    else{
+        $('#suggestion').html(" ");
+    }
+
+}
+
 var name,actor,rating,genre,img;
 window.onload = function() {
     getMovie();

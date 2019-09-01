@@ -35,7 +35,7 @@ if ($conn->connect_error) {
 $sql = "CREATE TABLE movieprop (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 movieproperty VARCHAR(100) NOT NULL,
-propertyvalue VARCHAR(100) NOT NULL,
+propertyvalue VARCHAR(500) NOT NULL,
 moviename VARCHAR(100) NOT NULL,
 reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )";
