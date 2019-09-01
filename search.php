@@ -13,11 +13,61 @@
 
     if($_SERVER['REQUEST_METHOD']=='GET') {
         $value=$_GET['data'];
-        $sql="SELECT moviename FROM movieprop WHERE moviename LIKE '$value%' or propertyvalue LIKE '$value%' GROUP BY moviename ";
+        $mname=null;
+        $actor=[];
+        $genre=[];
+        $sql="SELECT * FROM movietest.movieprop
+        WHERE moviename in
+        (SELECT moviename FROM movietest.movieprop 
+        WHERE moviename LIKE '$value%' OR propertyvalue LIKE '$value%' );";
         $result=$conn->query($sql);
+        $check=0;
         if ($result->num_rows > 0){
             while($row = $result->fetch_assoc()){
-                echo $row['moviename']." ";
+                $check=$check+1;
+                // echo $mname ."!=". $row['moviename'] ."||".$check."==".mysqli_num_rows($result);
+                if(($mname!=$row['moviename'] && $check!=1)||$check==mysqli_num_rows($result)){
+                    echo "<tr id='parent'>";
+                    echo "<td><img src='".$img."' width='50px' /></td>";
+                    echo "<td id='mname'>".$mname."</td>";
+                    echo "<td id='".$id."a'>";
+                    foreach ($actor as $val){
+                        echo $val."<br>";
+                    }
+                    echo "</td>";
+                    echo "<td id='".$id."y'>".$year. "</td>";
+                    echo "<td id='".$id."r'>".$rating. "</td>";
+                    echo "<td id='".$id."g'>";
+                    foreach ($genre as $val){
+                        echo $val."<br>";
+                    }
+                    echo "</td>";
+                    echo "<td id=".$id.">
+                            <button value='".$id."' onclick=\"edit(this)\">Edit Movie</button>
+                            <button onclick=\"del(this)\">Delete Movie</button>
+                        </td>";
+                    echo "</tr>";
+                    $actor=[];
+                    $genre=[];
+                }
+                
+                switch($row["movieproperty"]){
+
+                    case 'image': $img=$row['propertyvalue'];
+                        break;
+                    case 'rating': $rating=$row['propertyvalue'];
+                        break;
+                    case 'year': $year=$row['propertyvalue'];
+                        break;
+                    case 'actor':array_push($actor,$row['propertyvalue']);
+                        break;
+                    case 'genre':array_push($genre,$row ['propertyvalue']);
+                        break;
+                }
+                $mname=$row['moviename'];
+                
+
+                
             }
         }
     }

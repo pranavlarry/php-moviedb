@@ -101,12 +101,12 @@ function showResult(value) {
             },
             function(result){
                 console.log(result)
-                $('#suggestion').html("suggestions:- "+result);
+                $('#table').html("suggestions:- "+result);
             }
         )
     }
     else{
-        $('#suggestion').html(" ");
+        getMovie();
     }
 
 }
