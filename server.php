@@ -12,61 +12,72 @@
     } 
 
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
-        $sql = "SELECT * FROM movie";
-        $result = $conn->query($sql);
-
+        $mname=null;
+        $actor=array();
+        $genre=array();
+        $result = getval($conn);
+        $id=0;
+        echo "<tr>
+                <th>Image</th>
+                <th>Film Name</th> 
+                <th>Actors</th>
+                <th>year</th>
+                <th>Ratings</th>
+                <th>Genre</th>
+                <th></th>
+            </tr>";
         if ($result->num_rows > 0) {
             // output data of each row
-            $id=0;
-            echo "<tr>
-                    <th>Image</th>
-                    <th>Film Name</th> 
-                    <th>Actors</th>
-                    <th>year</th>
-                    <th>Ratings</th>
-                    <th>Genre</th>
-                    <th></th>
-                </tr>";
             while($row = $result->fetch_assoc()) {
-                $mname=$row['movie'];
-                $rating=getval($mname,'rating',$conn);
-                $img=getval($mname,'image',$conn);
-                $year=getval($mname,'year',$conn);
-                $sql1= "SELECT propertyvalue FROM movieprop WHERE moviename='$mname' AND movieproperty='actor'";
-                $result1 = $conn->query($sql1);
-                $sql2= "SELECT propertyvalue FROM movieprop WHERE moviename='$mname' AND movieproperty='genre'";
-                $result2 = $conn->query($sql2);
                 $id=$id+1;
-                echo "<tr id='parent'>";
-                echo "<td><img src='".$img."' width='50px' /></td>";
-                echo "<td id='mname'>".$mname."</td>";
-                echo "<td id='".$id."a'>";
-                if($result1->num_rows > 0){
-                    while($row1 = $result1->fetch_assoc()) {
-                        echo $row1["propertyvalue"]."<br>";
+                switch($row["movieproperty"]){
+
+                    case 'image': $img=$row['propertyvalue'];
+                        break;
+                    case 'rating': $rating=$row['propertyvalue'];
+                        break;
+                    case 'year': $year=$row['propertyvalue'];
+                        break;
+                    case 'actor':array_push($actor,$row['propertyvalue']);
+                        break;
+                    case 'genre':array_push($genre,$row['propertyvalue']);
+                        break;
+                }
+                if(($mname!=$row['movie'] && $id!=1) || mysqli_num_rows($result)==$id) {
+                    echo "<tr id='parent'>";
+                    echo "<td><img src='".$img."' width='50px' /></td>";
+                    echo "<td id='mname'>".$mname."</td>";
+                    echo "<td id='".$id."a'>";
+                    foreach ($actor as $val){
+                        echo $val."<br>";
                     }
-                } 
-                echo "</td>";
-                echo "<td id='".$id."y'>".$year. "</td>";
-                echo "<td id='".$id."r'>".$rating. "</td>";
-                echo "<td id='".$id."g'>";
-                if($result2->num_rows > 0){
-                    while($row2 = $result2->fetch_assoc()) {
-                        echo  $row2["propertyvalue"]."<br>";
+                    echo "</td>";
+                    echo "<td id='".$id."y'>".$year. "</td>";
+                    echo "<td id='".$id."r'>".$rating. "</td>";
+                    echo "<td id='".$id."g'>";
+                    foreach ($genre as $val){
+                        echo $val."<br>";
                     }
-                }  
-                echo "</td>";
-                echo "<td id=".$id.">
-                        <button value='".$id."' onclick=\"edit(this)\">Edit Movie</button>
-                         <button onclick=\"del(this)\">Delete Movie</button>
-                    </td>";
-                echo "</tr>";
+                    echo "</td>";
+                    echo "<td id=".$id.">
+                            <button value='".$id."' onclick=\"edit(this)\">Edit Movie</button>
+                             <button onclick=\"del(this)\">Delete Movie</button>
+                        </td>";
+                    echo "</tr>";
+                    $actor=[];
+                    $genre=[];
+                }
+                 $mname=$row['movie'];      
             }
-        } else {
+        }
+        else {
             echo "0 results";
         }
         $conn->close();
-    }
+    } 
+                    
+
+
     else if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // echo $_POST['name'];
         $req= $_REQUEST["req"];
@@ -101,37 +112,18 @@
             }else{
                 echo "error";
             }
-            // echo $name;
             $yr=$_POST["year"];
             $img=$_POST["img"];
-            // $genre=$_POST["genreselect"];
             $rating=$_POST["rating"];
             insert('year',$yr,$name,$conn);
             insert('image',$img,$name,$conn);
             insert('rating',$rating,$name,$conn);
-
-            // $actor=$_POST["actorselect"];
             foreach ($_POST['actorselect'] as $actor){
-                // echo $actor."\n";
                 insert('actor',$actor,$name,$conn);
-                // if ($conn->query($sql) === TRUE) {
-                //     echo "New record created successfully";
-                // } else {
-                //     echo "Error: " . $sql . "<br>" . $conn->error;
-                // }
             }
             foreach ($_POST['genreselect'] as $genre){
                 insert('genre', $genre, $name,$conn);
-                // if ($conn->query($sql) === TRUE) {
-                //     echo "New record created successfully";
-                // } else {
-                //     echo "Error: " . $sql . "<br>" . $conn->error;
-                // }
             }
-            // $sql = "INSERT INTO movie (moviename, yr, img, rating)
-            // VALUES ('$name', '$yr', '$img', '$rating')";
-            // $conn->query($sql);
-            // $conn->close();
             header('Location: /movie.html');
         }
 
@@ -151,11 +143,12 @@
     }
 
 
-    function getval($mname,$propname,$conn){
-        $sql1= "SELECT propertyvalue FROM movieprop WHERE moviename='$mname' AND movieproperty='$propname'";
-        $result1 = $conn->query($sql1);
-        $row1 = $result1->fetch_assoc();
-        return $row1['propertyvalue'];
+    function getval($conn){
+        $sql="SELECT movie.movie,movieprop.movieproperty,movieprop.propertyvalue
+        FROM movietest.movie
+        INNER JOIN movietest.movieprop ON movieprop.moviename = movie.movie";
+        return $conn->query($sql);
+ 
     }
 
     function insert($propname,$propval,$mname,$conn){
