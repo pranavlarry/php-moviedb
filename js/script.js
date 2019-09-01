@@ -100,12 +100,17 @@ function showResult(value) {
                 data: value
             },
             function(result){
-                console.log(result)
-                $('#table').html("suggestions:- "+result);
+                if(result != 'none'){
+                    $('#table').html(result);
+                }
+                else {
+                    $('#table').html("<b>No results<b>");
+                }
+                
             }
         )
     }
-    else{
+    else if(value.length==0){
         getMovie();
     }
 

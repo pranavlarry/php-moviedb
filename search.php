@@ -21,12 +21,25 @@
         (SELECT moviename FROM movietest.movieprop 
         WHERE moviename LIKE '$value%' OR propertyvalue LIKE '$value%' );";
         $result=$conn->query($sql);
-        $check=0;
+        $id=0;
         if ($result->num_rows > 0){
             while($row = $result->fetch_assoc()){
-                $check=$check+1;
-                // echo $mname ."!=". $row['moviename'] ."||".$check."==".mysqli_num_rows($result);
-                if(($mname!=$row['moviename'] && $check!=1)||$check==mysqli_num_rows($result)){
+                $id=$id+1;
+                switch($row["movieproperty"]){
+
+                    case 'image': $img=$row['propertyvalue'];
+                        break;
+                    case 'rating': $rating=$row['propertyvalue'];
+                        break;
+                    case 'year': $year=$row['propertyvalue'];
+                        break;
+                    case 'actor':array_push($actor,$row['propertyvalue']);
+                        break;
+                    case 'genre':array_push($genre,$row ['propertyvalue']);
+                        break;
+                }
+                // echo $mname ."!=". $row['moviename'] ."||".$id."==".mysqli_num_rows($result);
+                if(($mname!=$row['moviename'] && $id!=1)||$id==mysqli_num_rows($result)){
                     echo "<tr id='parent'>";
                     echo "<td><img src='".$img."' width='50px' /></td>";
                     echo "<td id='mname'>".$mname."</td>";
@@ -51,24 +64,15 @@
                     $genre=[];
                 }
                 
-                switch($row["movieproperty"]){
-
-                    case 'image': $img=$row['propertyvalue'];
-                        break;
-                    case 'rating': $rating=$row['propertyvalue'];
-                        break;
-                    case 'year': $year=$row['propertyvalue'];
-                        break;
-                    case 'actor':array_push($actor,$row['propertyvalue']);
-                        break;
-                    case 'genre':array_push($genre,$row ['propertyvalue']);
-                        break;
-                }
                 $mname=$row['moviename'];
                 
 
                 
             }
+
+        }
+        else{
+            echo "none";
         }
     }
 
