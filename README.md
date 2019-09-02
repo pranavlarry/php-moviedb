@@ -24,6 +24,7 @@ actorgenre.php--> actor,genre server (display and add actor or genre)
 search.php -----> search movie
 
 *todo:-
+
     -error handling
     
     -actor and genre management
