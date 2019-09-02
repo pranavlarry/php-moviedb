@@ -21,24 +21,8 @@
         </form>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="./js/script.js"></script>
     <script>
-        function getActor(){
-            $.get(
-                'actorgenre.php?req=a',
-                function(result){
-                    $('#actorselect').html(result);
-                }
-            )
-        }
-        function getGenre(){
-            $.get(
-                'actorgenre.php?req=g',
-                function(result){
-                    console.log(result)
-                    $('#genreselect').html(result);
-                }
-            )
-        }
         
         $(document).ready(() => {
             getActor();

@@ -1,12 +1,17 @@
-function getMovie() {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("table").innerHTML = this.responseText;
+function getMovie(i) {
+    var link;
+    i ? link='server.php?page='+i : link='server.php?page=1';
+    
+    console.log(link);
+    $.ajax({
+        type:'get',
+        url: link,
+        // dataType: "JSON",
+        success:function(page) {
+            $('#table').html(page.table);
+            $('#pagination').html(page.pageno);
         }
-    };
-    xmlhttp.open("GET", "server.php?req=getmovie", true);
-    xmlhttp.send();
+    });
 }
 
 var edit=(obj)=>{
@@ -102,6 +107,7 @@ function showResult(value) {
             function(result){
                 if(result != 'none'){
                     $('#table').html(result);
+                    $('#pagination').html(" ");
                 }
                 else {
                     $('#table').html("<b>No results<b>");
@@ -116,8 +122,29 @@ function showResult(value) {
 
 }
 
-var name,actor,rating,genre,img;
-window.onload = function() {
-    getMovie();
+function getActor(id){
+    var link;
+    id ? link = "#actorselect" + id : link = "#actorselect" ;
+    console.log(link);
+    $.get(
+        'actorgenre.php?req=a',
+        function(result){
+            $(link).html(result);
+        }
+    )
+}
+function getGenre(id){
+    var link;
+    id ? link = "#genreselect" + id : link = "#genreselect" ;
+    $.get(
+        'actorgenre.php?req=g',
+        function(result){
+            console.log(result)
+            $(link).html(result);
+        }
+    )
+}
 
-  };
+var name,actor,rating,genre,img;
+
+

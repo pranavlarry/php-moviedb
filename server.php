@@ -1,17 +1,7 @@
 <?php
-    $servername = "localhost:3306";
-    $username = "root";
-    $password = "password";
-    $dbname = "movietest";
+    include 'config.php';
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    } 
-
-    include 'search.php';
+    
 
 
     $limit = 5;
@@ -25,26 +15,46 @@
 
     $start = ($pn-1) * $limit;  
 
-     
+    include 'search.php';
 
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
-        if(isset($_REQUEST['req'])&&$_REQUEST['req']=='getmovie') {
-            $sql="SELECT * FROM movie";
-            $result=$conn->query($sql);
-            $total_records = mysqli_num_rows($result); 
-            $tp = ceil($total_records / $limit);
-            echo "<tr>
-                    <th>Image</th>
-                    <th>Film Name</th> 
-                    <th>Actors</th>
-                    <th>year</th>
-                    <th>Ratings</th>
-                    <th>Genre</th>
-                    <th></th>
-                </tr>";
-            display($result,$conn);
-            $conn->close();
+        // echo "hello";
+        if(!isset($_REQUEST['req'])){
+            $table='';
+            $sql1="SELECT * FROM movie";
+            $result1=$conn->query($sql1);
+            // if(isset($_REQUEST['req'])&&$_REQUEST['req']=='getmovie') {
+                $sql="SELECT * FROM movie LIMIT $start,$limit";
+                $result=$conn->query($sql);
+                $total_records = mysqli_num_rows($result1); 
+                $tp = ceil($total_records / $limit);
+                $table.= "<tr>
+                        <th>Image</th>
+                        <th>Film Name</th> 
+                        <th>Actors</th>
+                        <th>year</th>
+                        <th>Ratings</th>
+                        <th>Genre</th>
+                        <th></th>
+                    </tr>";
+                $table.=display($result,$conn);
+                
+                $conn->close();
+            // }
+            $pagLink="";
+            for($i=1; $i<=$tp; $i++) { 
+                if($i==$pn)
+                $pagLink .= "<li class='page-item active'><a class='page-link' onclick=getMovie(".$i.") href='#'>".$i."</a></li>"; 
+                else
+                $pagLink .= "<li class='page-item'><a class='page-link' onclick=getMovie(".$i.") href='#'>".$i."</a></li>";   
+            }
+            $page = array("table"=>$table,"pageno"=>$pagLink);
+            //   echo $pagLink;
+            header("Content-Type: application/json");
+            echo json_encode($page);
         }
+        // echo $table;
+
 
     } 
                     
@@ -136,6 +146,7 @@
     }
 
     function display($result,$conn) {
+        $display="";
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
@@ -160,32 +171,32 @@
                                 break;
                         }
                     }
-                        echo "<tr id='parent'>";
-                        echo "<td><img src='".$img."' width='50px' /></td>";
-                        echo "<td id='mname'>".$mname."</td>";
-                        echo "<td id='".$id."a'>";
+                        $display.= "<tr id='parent'>";
+                        $display.= "<td><img src='".$img."' width='50px' /></td>";
+                        $display.= "<td id='mname'>".$mname."</td>";
+                        $display.= "<td id='".$id."a'>";
                         foreach ($actor as $val){
-                            echo $val."<br>";
+                            $display.= $val."<br>";
                         }
-                        echo "</td>";
-                        echo "<td id='".$id."y'>".$year. "</td>";
-                        echo "<td id='".$id."r'>".$rating. "</td>";
-                        echo "<td id='".$id."g'>";
+                        $display.= "</td>";
+                        $display.= "<td id='".$id."y'>".$year. "</td>";
+                        $display.= "<td id='".$id."r'>".$rating. "</td>";
+                        $display.= "<td id='".$id."g'>";
                         foreach ($genre as $val){
-                            echo $val."<br>";
+                            $display.= $val."<br>";
                         }
-                        echo "</td>";
-                        echo "<td id=".$id.">
-                                <button value='".$id."' onclick=\"edit(this)\">Edit Movie</button>
+                        $display.= "</td>";
+                        $display.= "<td id=".$id."><button value='".$id."' onclick=\"edit(this)\">Edit Movie</button>
                                 <button onclick=\"del(this)\">Delete Movie</button>
                             </td>";
-                        echo "</tr>";
+                        $display.= "</tr>";
                 }     
             }
         }
         else {
-            echo "0 results";
+            $display= "0 results";
         }
+        return $display;
     }
 
 ?>
