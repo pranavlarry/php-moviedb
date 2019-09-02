@@ -1,9 +1,8 @@
 <?php
+    //db
     include 'config.php';
 
-    
-
-
+    //pagenation data
     $limit = 5;
 
     if (isset($_GET["page"])) {  
@@ -15,8 +14,10 @@
 
     $start = ($pn-1) * $limit;  
 
+    //search 
     include 'search.php';
 
+    //display movies
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
         // echo "hello";
         if(!isset($_REQUEST['req'])){
@@ -59,7 +60,7 @@
     } 
                     
 
-
+    //edit or add new movie
     else if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // echo $_POST['name'];
         $req= $_REQUEST["req"];
@@ -117,6 +118,8 @@
 
     }
 
+
+    //delete movie
     else if ($_SERVER["REQUEST_METHOD"]== "DELETE") {
         $data =file_get_contents('php://input');
         parse_str($data, $name);
@@ -130,7 +133,7 @@
         }
     }
 
-
+    //get value from db
     function getval($conn,$mname){
         $sql="SELECT movieprop.movieproperty,movieprop.propertyvalue
         FROM movieprop
@@ -139,12 +142,14 @@
  
     }
 
+    //insert value into db
     function insert($propname,$propval,$mname,$conn){
         $sql = "INSERT INTO movieprop (movieproperty, propertyvalue, moviename)
         VALUES ('$propname', '$propval', '$mname');";
         return $conn->query($sql);
     }
 
+    //get movie display details
     function display($result,$conn) {
         $display="";
         if ($result->num_rows > 0) {

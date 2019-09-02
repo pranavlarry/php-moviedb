@@ -1,3 +1,5 @@
+
+//fn to display movie
 function getMovie(i) {
     var link;
     i ? link='server.php?page='+i : link='server.php?page=1';
@@ -14,6 +16,7 @@ function getMovie(i) {
     });
 }
 
+//fn to change input field on edit
 var edit=(obj)=>{
     var id=$(obj).val();
     getActor(id);
@@ -26,6 +29,7 @@ var edit=(obj)=>{
     $("#"+id).html("<button onclick='sentedit(this,"+id+")' >Submit</button>");
 }
 
+//fn to edit movie
 var sentedit = (obj,id)=>{
         console.log($("#actorselect").val());
         $.post(
@@ -49,6 +53,7 @@ var sentedit = (obj,id)=>{
         )
 }
 
+//fn to delete movie from db
 var del = (obj)=>{
     $.ajax({
         type:'delete',
@@ -66,8 +71,10 @@ var del = (obj)=>{
 
 }
 
+//fn to add actor and genre to db
 var addactorgenre=(greq,id)=>{
     console.log($("#"+id).val());
+    console.log("#result"+greq);
     $.post(
         'actorgenre.php?req='+greq,
         {
@@ -75,28 +82,12 @@ var addactorgenre=(greq,id)=>{
 
         },
         function(result){
-            $("#result").html(result);
+
+            $("#result"+greq).html(result);
         }
     )
 }
 
-function getActor(id){
-    $.get(
-        'actorgenre.php?req=a',
-        function(result){
-            $('#actorselect'+id).html(result);
-        }
-    )
-}
-function getGenre(id){
-    $.get(
-        'actorgenre.php?req=g',
-        function(result){
-            console.log(result)
-            $('#genreselect'+id).html(result);
-        }
-    )
-}
 
 function showResult(value) {
     if(value.length>2 || $.isNumeric(value)){
@@ -122,6 +113,7 @@ function showResult(value) {
 
 }
 
+//fn to get actors from database
 function getActor(id){
     var link;
     id ? link = "#actorselect" + id : link = "#actorselect" ;
@@ -133,6 +125,8 @@ function getActor(id){
         }
     )
 }
+
+//fn to get genre from database
 function getGenre(id){
     var link;
     id ? link = "#genreselect" + id : link = "#genreselect" ;

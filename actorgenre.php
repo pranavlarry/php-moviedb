@@ -1,12 +1,7 @@
 <?php
     include 'config.php';
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    } 
+    //add new actor or genre
     if ($_SERVER["REQUEST_METHOD"] == "POST"){
         $req= $_REQUEST["req"];
         if($req=='a'){
@@ -32,6 +27,8 @@
             $conn->close();
         }
     }
+
+    //display actor or genre
     else if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $req= $_REQUEST["req"];
         if($req=='a') {
