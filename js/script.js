@@ -5,7 +5,7 @@ function getMovie() {
             document.getElementById("table").innerHTML = this.responseText;
         }
     };
-    xmlhttp.open("GET", "server.php", true);
+    xmlhttp.open("GET", "server.php?req=getmovie", true);
     xmlhttp.send();
 }
 
@@ -96,7 +96,7 @@ function getGenre(id){
 function showResult(value) {
     if(value.length>2 || $.isNumeric(value)){
         $.get(
-            'search.php',{
+            'server.php?req=search',{
                 data: value
             },
             function(result){
