@@ -25,5 +25,7 @@ search.php -----> search movie
 
 *todo:-
     -error handling
+    
     -actor and genre management
+    
     -fields mandatory in edit mode
